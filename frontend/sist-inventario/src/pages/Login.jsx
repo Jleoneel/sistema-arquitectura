@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
+import {useNavigate} from 'react-router-dom'
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+
+  // console.log(import.meta.env.VITE_API_URL);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    localStorage.removeItem('user');
+    navigate('/');
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/login`, {
         method: 'POST',
@@ -23,7 +29,8 @@ export default function Login() {
       const data = await response.json();
       if (response.ok) {
         console.log('Usuario autenticado:', data);
-        // Aquí puedes redirigir o guardar sesión
+        localStorage.setItem('user', JSON.stringify(data.user));
+        navigate('/Dashboard');
       } else {
         alert(data.message || 'Error en el login');
       }

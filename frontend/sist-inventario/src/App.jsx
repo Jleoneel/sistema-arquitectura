@@ -1,15 +1,20 @@
-import {Routes, Route} from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import PrivateRoute from './pages/PrivateRoute'
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 
-const App = () => {
+function App  () {
   return (
     <Routes>
       <Route path="/" element={<Login />}/>
       <Route path="/Register" element={<Register/>} />
-      <Route path="/Dashboard" element={<Dashboard/>} />
-    </Routes>
+       <Route path="/Dashboard" element={
+        <PrivateRoute>
+          <Dashboard />
+          </PrivateRoute>
+      } />
+      </Routes>
   );
 };
 
