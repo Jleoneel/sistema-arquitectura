@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/productController');
+const productController = require('../controllers/productController');
 
-router.get('/', controller.getAll);
-router.post('/', controller.create);
-router.put('/:id', controller.update);
-router.delete('/:id', controller.remove);
+router.get('/', productController.getAllProducts);
+router.post('/', productController.createProduct);
+router.delete('/:id', productController.deleteProduct);
 
 module.exports = router;

@@ -3,6 +3,7 @@ import PrivateRoute from './pages/PrivateRoute'
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import VerProductos from './components/verProductos';
 
 function App  () {
   return (
@@ -14,6 +15,8 @@ function App  () {
           <Dashboard />
           </PrivateRoute>
       } />
+      <Route path="/ProductList" element={<VerProductos />} />
+
       </Routes>
   );
 };

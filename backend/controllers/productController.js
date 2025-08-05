@@ -1,35 +1,37 @@
 const Product = require('../models/Product');
 
-exports.getAll = async (req, res) => {
-  const products = await Product.findAll();
-  res.json(products);
+exports.getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.findAll({
+      where: { estado: 1 }
+    });
+    res.json(products);
+  } catch (error) {
+    console.error('Error al obtener productos:', error);
+    res.status(500).json({ message: 'Error al obtener productos' });
+  }
 };
 
-exports.create = async (req, res) => {
+exports.createProduct = async (req, res) => {
   try {
-    const product = await Product.create(req.body);
+    const product = await Product.create({
+      ...req.body,
+      estado: 1
+    });
     res.status(201).json(product);
-  } catch (err) {
-    res.status(400).json({ message: 'Error al crear producto', error: err });
+  } catch (error) {
+    console.error('Error al crear producto:', error);
+    res.status(500).json({ message: 'Error al crear producto' });
   }
 };
 
-exports.update = async (req, res) => {
+exports.deleteProduct = async (req, res) => {
   try {
-    const { id } = req.params;
-    const updated = await Product.update(req.body, { where: { id } });
-    res.json(updated);
-  } catch (err) {
-    res.status(400).json({ message: 'Error al actualizar', error: err });
-  }
-};
-
-exports.remove = async (req, res) => {
-  try {
-    const { id } = req.params;
-    await Product.destroy({ where: { id } });
-    res.status(204).end();
-  } catch (err) {
-    res.status(400).json({ message: 'Error al eliminar', error: err });
+    const id = req.params.id;
+    await Product.update({ estado: -1 }, { where: { id } });
+    res.json({ message: 'Producto eliminado (estado = -1)' });
+  } catch (error) {
+    console.error('Error al eliminar producto:', error);
+    res.status(500).json({ message: 'Error al eliminar producto' });
   }
 };
