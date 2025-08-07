@@ -1,44 +1,53 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 export default function RegistrarVenta() {
   const [productos, setProductos] = useState([]);
-  const [productoId, setProductoId] = useState('');
-  const [cantidad, setCantidad] = useState('');
-  const [mensaje, setMensaje] = useState('');
+  const [productoId, setProductoId] = useState("");
+  const [cantidad, setCantidad] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [precioUnitario, setPrecioUnitario] = useState(0);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/products`)
-      .then(res => res.json())
-      .then(data => setProductos(data))
-      .catch(err => console.error('Error cargando productos:', err));
+      .then((res) => res.json())
+      .then((data) => setProductos(data))
+      .catch((err) => console.error("Error cargando productos:", err));
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMensaje('');
 
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/ventas`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          producto_id: productoId,
-          cantidad: parseInt(cantidad, 10)
-        })
+          producto_id: parseInt(productoId),
+          cantidad: parseInt(cantidad),
+        }),
       });
 
-      const data = await res.json();
+      if (!res.ok) throw new Error("Error al registrar venta");
 
-      if (res.ok) {
-        setMensaje('✅ Venta registrada correctamente');
-        setProductoId('');
-        setCantidad('');
-      } else {
-        setMensaje(`⚠️ ${data.message}`);
-      }
+      const result = await res.json();
+      setMensaje("Venta registrada correctamente");
+
+      // Reset formulario
+      setProductoId("");
+      setCantidad("");
+      setPrecioUnitario(0);
+      setTotal(0);
+
+      // Opcional: Actualiza productos para reflejar nuevo stock
+      const productosRes = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/products`
+      );
+      const productosData = await productosRes.json();
+      setProductos(productosData);
     } catch (error) {
-      console.error('Error al registrar venta:', error);
-      setMensaje('❌ Error al conectar con el servidor');
+      setMensaje("Error al registrar la venta");
+      console.error(error);
     }
   };
 
@@ -47,20 +56,25 @@ export default function RegistrarVenta() {
       <h2 className="text-2xl font-bold mb-4 text-center">Registrar Venta</h2>
 
       {mensaje && (
-        <div className="mb-4 text-center text-sm font-semibold">
-          {mensaje}
-        </div>
+        <div className="mb-4 text-center text-sm font-semibold">{mensaje}</div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <select
           value={productoId}
-          onChange={(e) => setProductoId(e.target.value)}
+          onChange={(e) => {
+            const id = e.target.value;
+            setProductoId(id);
+            const producto = productos.find((p) => p.id == id);
+            if (producto) setPrecioUnitario(producto.precio);
+            setCantidad(""); // Reset cantidad cuando cambias de producto
+            setTotal(0);
+          }}
           className="w-full border rounded p-2"
           required
         >
           <option value="">Selecciona un producto</option>
-          {productos.map(p => (
+          {productos.map((p) => (
             <option key={p.id} value={p.id}>
               {p.nombre} - Stock: {p.cantidad}
             </option>
@@ -71,11 +85,21 @@ export default function RegistrarVenta() {
           type="number"
           placeholder="Cantidad"
           value={cantidad}
-          onChange={(e) => setCantidad(e.target.value)}
+          onChange={(e) => {
+            const cant = e.target.value;
+            setCantidad(cant);
+            setTotal(precioUnitario * cant);
+          }}
           className="w-full border rounded p-2"
           min="1"
           required
         />
+
+        {total > 0 && (
+          <div className="text-center font-semibold text-green-600">
+            Total: ${total.toFixed(2)}
+          </div>
+        )}
 
         <button
           type="submit"
