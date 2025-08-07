@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Venta = require("../models/Venta");
 const Producto = require("../models/Product");
+const {obtenerHistorialVentas} = require('../controllers/ventaController');
 
 router.post("/", async (req, res) => {
   const { producto_id, cantidad } = req.body;
@@ -31,5 +32,7 @@ router.post("/", async (req, res) => {
     res.status(500).json({ message: "Error al registrar la venta" });
   }
 });
+
+router.get('/', obtenerHistorialVentas);
 
 module.exports = router;

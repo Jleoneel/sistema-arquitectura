@@ -27,3 +27,22 @@ exports.registrarVenta = async (req, res) => {
     res.status(500).json({ message: 'Error al registrar la venta' });
   }
 };
+
+// ✅ Función para obtener historial de ventas
+exports.obtenerHistorialVentas = async (req, res) => {
+  try {
+    const ventas = await Venta.findAll({
+      include: {
+        model: Product,
+        attributes: ['nombre'],
+      },
+      order: [['fecha', 'DESC']],
+    });
+
+    res.json(ventas);
+  } catch (error) {
+    console.error('Error al obtener historial de ventas:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
+};
+

@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogOut, Package, Plus } from "lucide-react";
+import {
+  LogOut,
+  Package,
+  Plus,
+  BadgeDollarSign,
+  ClipboardList,
+} from "lucide-react";
 import ProductForm from "../components/productForm";
 import ProductTable from "../components/ProductTable";
 import RegistrarVenta from "../pages/RegistrarVenta";
+import HistorialVentas from "../pages/historialVentas";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -109,8 +116,16 @@ const Dashboard = () => {
                 onClick={() => setCurrentView("ventas")}
                 className="w-full flex items-center space-x-3 px-4 py-3 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-md transition-colors"
               >
-                <Package className="w-5 h-5" />
+                <BadgeDollarSign className="w-5 h-5" />
                 <span>Registrar Venta</span>
+              </button>
+
+              <button
+                onClick={() => setCurrentView("historial")}
+                className="w-full flex items-center space-x-3 px-4 py-3 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-md transition-colors"
+              >
+                <ClipboardList className="w-5 h-5" />
+                <span>Historial de Ventas</span>
               </button>
             </nav>
           </div>
@@ -133,6 +148,8 @@ const Dashboard = () => {
             )}
 
             {currentView === "ventas" && <RegistrarVenta />}
+
+            {currentView === "historial" && <HistorialVentas />}
           </div>
         </div>
       </div>

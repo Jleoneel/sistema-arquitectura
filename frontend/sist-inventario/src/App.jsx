@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import VerProductos from './components/verProductos';
+import HistorialVentas from './pages/historialVentas';
 
 function App  () {
   return (
@@ -16,6 +17,7 @@ function App  () {
           </PrivateRoute>
       } />
       <Route path="/ProductList" element={<VerProductos />} />
+      <Route path="/HistorialVentas" element={<HistorialVentas />} />
 
       </Routes>
   );
