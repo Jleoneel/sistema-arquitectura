@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 
 export default function RegistrarVenta() {
   const [productos, setProductos] = useState([]);
   const [productoId, setProductoId] = useState("");
   const [cantidad, setCantidad] = useState("");
-  const [mensaje, setMensaje] = useState("");
   const [precioUnitario, setPrecioUnitario] = useState(0);
   const [total, setTotal] = useState(0);
 
@@ -29,9 +29,17 @@ export default function RegistrarVenta() {
       });
 
       if (!res.ok) throw new Error("Error al registrar venta");
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: "Venta registrada correctamente",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
 
       const result = await res.json();
-      setMensaje("Venta registrada correctamente");
 
       // Reset formulario
       setProductoId("");
@@ -46,18 +54,44 @@ export default function RegistrarVenta() {
       const productosData = await productosRes.json();
       setProductos(productosData);
     } catch (error) {
-      setMensaje("Error al registrar la venta");
-      console.error(error);
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: "Error al registrar la venta",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
+    }
+
+    // Actualizar productos para reflejar stock actualizado
+    const productosRes = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/products`
+    );
+    const productosData = await productosRes.json();
+    setProductos(productosData);
+
+    // Verificar stock bajo
+    const productoActualizado = productosData.find(
+      (p) => p.id === parseInt(productoId)
+    );
+    if (
+      productoActualizado &&
+      productoActualizado.cantidad <= productoActualizado.stock_minimo
+    ) {
+      Swal.fire({
+        icon: "warning",
+        title: "¡Stock bajo!",
+        text: `El producto "${productoActualizado.nombre}" está por debajo del stock mínimo.`,
+        confirmButtonColor: "#f59e0b",
+      });
     }
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto mt-10">
+    <div className="bg-white p-6 rounded-lg shadow-md w-full">
       <h2 className="text-2xl font-bold mb-4 text-center">Registrar Venta</h2>
-
-      {mensaje && (
-        <div className="mb-4 text-center text-sm font-semibold">{mensaje}</div>
-      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <select

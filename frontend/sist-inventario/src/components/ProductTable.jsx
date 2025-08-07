@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Edit2, Trash2 } from "lucide-react";
 import ProductModal from "./productModal";
+import Swal from "sweetalert2";
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);
@@ -24,7 +25,9 @@ export default function ProductList() {
   };
 
   const handleSaveProduct = async (form) => {
-    const url = `${import.meta.env.VITE_API_URL}/api/products/${editingProduct.id}`;
+    const url = `${import.meta.env.VITE_API_URL}/api/products/${
+      editingProduct.id
+    }`;
     await fetch(url, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -36,12 +39,23 @@ export default function ProductList() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("¿Seguro que quieres eliminar este producto?")) {
-      await fetch(`${import.meta.env.VITE_API_URL}/api/products/${id}`, {
-        method: "DELETE",
-      });
-      fetchProducts();
-    }
+    Swal.fire({
+      title: "¿Desea eliminar este producto?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await fetch(`${import.meta.env.VITE_API_URL}/api/products/${id}`, {
+          method: "DELETE",
+        });
+        fetchProducts();
+        Swal.fire("¡Eliminado!", "El producto ha sido eliminado.", "success");
+      }
+    });
   };
 
   return (

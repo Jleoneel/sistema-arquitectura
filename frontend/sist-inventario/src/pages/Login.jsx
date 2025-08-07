@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {useNavigate} from 'react-router-dom'
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });

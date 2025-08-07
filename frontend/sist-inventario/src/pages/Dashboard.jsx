@@ -18,11 +18,19 @@ const Dashboard = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [currentView, setCurrentView] = useState("productos");
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (!user) navigate("/");
-  }, []);
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user) {
+    navigate("/");
+  } else {
+    console.log("Usuario cargado desde localStorage:", user);
+    const fullName = user.nombre || user.username || "Usuario";
+    const firstName = fullName.split(" ")[0]; // solo el primer nombre si lo deseas
+    setUserName(firstName);
+  }
+}, []);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -70,7 +78,7 @@ const Dashboard = () => {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-gray-600">Hola,</span>
+              <span className="text-gray-600">Hola, {userName}</span>
               <button
                 onClick={handleLogout}
                 className="flex items-center space-x-2 text-gray-500 hover:text-gray-700"
